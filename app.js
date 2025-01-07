@@ -5,6 +5,7 @@ fetch("https://testapi.io/api/Tomas/resource/NoteList")
   // .then((data) => console.log(data))
   .then((data) => console.log(data.data)) //kad gauti savo sukurtus elementus
 
+// f. pasiima duomenis is serverio
 const fetchAPI = async (url, method = "GET", body = null) => {
   const options = {
     method,
@@ -16,18 +17,16 @@ const fetchAPI = async (url, method = "GET", body = null) => {
   if (method === "DELETE") return;
   return await response.json();
 };
-
+// f. gauti data is serverio ir atvaizduoti
 const getAndRenderNotes = async () => {
   const notesList = document.querySelector("#notes");
   notesList.innerHTML = "";
-  try {
+
     const data = await fetchAPI(fetchUrl);
     if (data?.data?.length) renderNotes(data.data);
-  } catch (error) {
-    console.error("Error fetching notes:", error);
-  }
 };
 
+// f. atvaizduoti notes HTML'e
 const renderNotes = (notes) => {
   const notesList = document.querySelector("#notes");
   notes.forEach((note) => {
@@ -35,7 +34,7 @@ const renderNotes = (notes) => {
     notesList.appendChild(noteItem);
   });
 };
-
+//f. sukurti viena note
 const createNoteElement = (note) => {
   const noteItem = document.createElement("div");
   noteItem.id = note.id;
@@ -70,8 +69,10 @@ const createNoteElement = (note) => {
   // mygtukui pridedama klase "delete"(stilizavimui)
   deleteButton.classList.add("delete");
 
+  // delete mygtukas idedamas i div'o konteineri
   actionsContainer.append(deleteButton);
 
+  //div'as su class'e "noteItem__text" ir div'as su class'e "noteItem__actions" sudedami i note
   noteItem.append(textContainer, actionsContainer);
   return noteItem;
 };
@@ -89,6 +90,7 @@ const handleDelete = async (id) => {
  
 };
 
+// f. atnaujinti duomenis serveryje
 const handleUpdate = async (note, updatedFields) => {
   
   await fetchAPI(`${fetchUrl}/${note.id}`, "PUT", {
@@ -98,7 +100,7 @@ const handleUpdate = async (note, updatedFields) => {
   getAndRenderNotes();
 
 };
-
+//f. isvalyti forma
 const clearForm = () => {
   document.querySelector("#title").value = "";
   document.querySelector("#description").value = "";
