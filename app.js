@@ -40,7 +40,7 @@ const createNoteElement = (note) => {
   const noteItem = document.createElement("div");
   noteItem.id = note.id;
   noteItem.classList.add("noteItem");
-
+// sukuriamas div'as su class'e "noteItem__text" ir h3, p elementais
   const textContainer = document.createElement("div");
   textContainer.classList.add("noteItem__text");
 
@@ -49,18 +49,25 @@ const createNoteElement = (note) => {
 
   const description = document.createElement("p");
   description.textContent = note.description;
+
+  // Pridedama arba pašalinama CSS klasė "completed" (užbraukimas)
   description.classList.toggle("completed", note.completed);
+  // Pridedamas "Click" liseneris
   description.addEventListener("click", () => {
     description.classList.toggle("completed");
+     // Atnaujinama užduoties būsena pagal tai, ar klasė "completed" yra priskirta (uzbraukiama)
     handleUpdate(note, { completed: description.classList.contains("completed") });
   });
-
+  // title ir description sudedami i text conteineri 
   textContainer.append(title, description);
 
+  //sukuriamas div'as su class'e "noteItem__actions" 
   const actionsContainer = document.createElement("div");
   actionsContainer.classList.add("noteItem__actions");
 
+  // sukuriamas delete mygtukas su piktograma ir paspaudimo ivykio f.
   const deleteButton = createButton("🗑️", () => handleDelete(note.id));
+  // mygtukui pridedama klase "delete"(stilizavimui)
   deleteButton.classList.add("delete");
 
   actionsContainer.append(deleteButton);
@@ -68,33 +75,28 @@ const createNoteElement = (note) => {
   noteItem.append(textContainer, actionsContainer);
   return noteItem;
 };
-
+// mygtuko sukurimo f.
 const createButton = (text, onClick) => {
   const button = document.createElement("button");
   button.textContent = text;
   button.addEventListener("click", onClick);
   return button;
 };
-
-const handleDelete = async (id) => {
-  try {
-    await fetchAPI(`${fetchUrl}/${id}`, "DELETE");
-    getAndRenderNotes();
-  } catch (error) {
-    console.error("Error deleting note:", error);
-  }
+// paspaudimo ivykio f.
+const handleDelete = async (id) => {  
+  await fetchAPI(`${fetchUrl}/${id}`, "DELETE");
+  getAndRenderNotes();
+ 
 };
 
 const handleUpdate = async (note, updatedFields) => {
-  try {
-    await fetchAPI(`${fetchUrl}/${note.id}`, "PUT", {
-      ...note,
-      ...updatedFields,
-    });
-    getAndRenderNotes();
-  } catch (error) {
-    console.error("Error updating note:", error);
-  }
+  
+  await fetchAPI(`${fetchUrl}/${note.id}`, "PUT", {
+    ...note,
+    ...updatedFields,
+  });
+  getAndRenderNotes();
+
 };
 
 const clearForm = () => {
@@ -110,14 +112,8 @@ document.querySelector("#notesForm").addEventListener("submit", async (event) =>
     completed: false,
     createdAt: new Date().toISOString(),
   };
-  try {
     await fetchAPI(fetchUrl, "POST", newNote);
     clearForm();
-    getAndRenderNotes();
-  } catch (error) {
-    console.error("Error adding note:", error);
-  }
+    getAndRenderNotes(); 
 });
-
-// Initial render
 getAndRenderNotes();
