@@ -108,9 +108,7 @@ document.querySelector("#notesForm").addEventListener("submit", async (event) =>
   event.preventDefault();
   const newNote = {
     title: document.querySelector("#title").value,
-    description: document.querySelector("#description").value,
-    completed: false,
-    createdAt: new Date().toISOString(),
+    description: document.querySelector("#description").value,  
   };
     await fetchAPI(fetchUrl, "POST", newNote);
     clearForm();
