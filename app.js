@@ -1,4 +1,5 @@
 const fetchUrl = "https://testapi.io/api/Tomas/resource/NoteList";
+const form = document.querySelector("#notesForm");
 
 fetch("https://testapi.io/api/Tomas/resource/NoteList")
   .then((response) => response.json())
@@ -17,7 +18,7 @@ const fetchAPI = async (url, method = "GET", body = null) => {
   if (method === "DELETE") return;
   return await response.json();
 };
-// f. gauti data is serverio ir atvaizduoti
+// f. gauti duomenis (data) is serverio ir atvaizduoti
 const getAndRenderNotes = async () => {
   const notesList = document.querySelector("#notes");
   notesList.innerHTML = "";
@@ -106,14 +107,20 @@ const clearForm = () => {
   document.querySelector("#description").value = "";
 };
 
-document.querySelector("#notesForm").addEventListener("submit", async (event) => {
+// f. prideti event listeneri prie submit
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  //sukuriamas naujas objektas
   const newNote = {
     title: document.querySelector("#title").value,
     description: document.querySelector("#description").value,  
   };
+  // duomenys siunciami i serveri kaip naujas objektas
     await fetchAPI(fetchUrl, "POST", newNote);
+    //isvalomi f. laukeliai
     clearForm();
+    //f. gauna data is serverio ir atvaizduoja
     getAndRenderNotes(); 
 });
+// f. kvieciama antra karta kad notes butu parodytus iskart, uzsikrovus puslapiui
 getAndRenderNotes();
