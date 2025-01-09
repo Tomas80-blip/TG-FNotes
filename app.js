@@ -2,11 +2,10 @@ const fetchUrl = "https://testapi.io/api/Tomas/resource/NoteList";
 const form = document.querySelector("#notesForm");
 
 fetch("https://testapi.io/api/Tomas/resource/NoteList")
-  .then((response) => response.json())
-  // .then((data) => console.log(data))
-  .then((data) => console.log(data.data)) //kad gauti savo sukurtus elementus
+  .then((response) => response.json())  
+  .then((data) => console.log(data.data))
 
-// f. pasiima duomenis is serverio
+
 const fetchAPI = async (url, method = "GET", body = null) => {
   const options = {
     method,
@@ -18,7 +17,7 @@ const fetchAPI = async (url, method = "GET", body = null) => {
   if (method === "DELETE") return;
   return await response.json();
 };
-// f. gauti duomenis (data) is serverio ir atvaizduoti
+
 const getAndRenderNotes = async () => {
   const notesList = document.querySelector("#notes");
   notesList.innerHTML = "";
@@ -27,7 +26,7 @@ const getAndRenderNotes = async () => {
     if (data?.data?.length) renderNotes(data.data);
 };
 
-// f. atvaizduoti notes HTML'e
+
 const renderNotes = (notes) => {
   const notesList = document.querySelector("#notes");
   notes.forEach((note) => {
@@ -35,12 +34,12 @@ const renderNotes = (notes) => {
     notesList.appendChild(noteItem);
   });
 };
-//f. sukurti viena note
+
 const createNoteElement = (note) => {
   const noteItem = document.createElement("div");
   noteItem.id = note.id;
   noteItem.classList.add("noteItem");
-// sukuriamas div'as su class'e "noteItem__text" ir h3, p elementais
+
   const textContainer = document.createElement("div");
   textContainer.classList.add("noteItem__text");
 
@@ -49,49 +48,39 @@ const createNoteElement = (note) => {
 
   const description = document.createElement("p");
   description.textContent = note.description;
-
-  // Pridedama arba pašalinama CSS klasė "completed" (užbraukimas)
-  description.classList.toggle("completed", note.completed);
-  // Pridedamas "Click" liseneris
+  
+  description.classList.toggle("completed", note.completed);  
   description.addEventListener("click", () => {
-    description.classList.toggle("completed");
-     // Atnaujinama užduoties būsena pagal tai, ar klasė "completed" yra priskirta (uzbraukiama)
+    description.classList.toggle("completed");    
     handleUpdate(note, { completed: description.classList.contains("completed") });
   });
-  // title ir description sudedami i text conteineri 
+  
   textContainer.append(title, description);
-
-  //sukuriamas div'as su class'e "noteItem__actions" 
+  
   const actionsContainer = document.createElement("div");
   actionsContainer.classList.add("noteItem__actions");
-
-  // sukuriamas delete mygtukas su piktograma ir paspaudimo ivykio f.
-  const deleteButton = createButton("🗑️", () => handleDelete(note.id));
-  // mygtukui pridedama klase "delete"(stilizavimui)
-  deleteButton.classList.add("delete");
-
-  // delete mygtukas idedamas i div'o konteineri
+  
+  const deleteButton = createButton("🗑️", () => handleDelete(note.id));  
+  deleteButton.classList.add("delete");  
   actionsContainer.append(deleteButton);
-
-  //div'as su class'e "noteItem__text" ir div'as su class'e "noteItem__actions" sudedami i note
+  
   noteItem.append(textContainer, actionsContainer);
   return noteItem;
 };
-// mygtuko sukurimo f.
+
 const createButton = (text, onClick) => {
   const button = document.createElement("button");
   button.textContent = text;
   button.addEventListener("click", onClick);
   return button;
 };
-// paspaudimo ivykio f.
+
 const handleDelete = async (id) => {  
   await fetchAPI(`${fetchUrl}/${id}`, "DELETE");
   getAndRenderNotes();
  
 };
 
-// f. atnaujinti duomenis serveryje
 const handleUpdate = async (note, updatedFields) => {
   
   await fetchAPI(`${fetchUrl}/${note.id}`, "PUT", {
@@ -101,26 +90,21 @@ const handleUpdate = async (note, updatedFields) => {
   getAndRenderNotes();
 
 };
-//f. isvalyti forma
+
 const clearForm = () => {
   document.querySelector("#title").value = "";
   document.querySelector("#description").value = "";
 };
 
-// f. prideti event listeneri prie submit
 form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  //sukuriamas naujas objektas
+  event.preventDefault();  
   const newNote = {
     title: document.querySelector("#title").value,
     description: document.querySelector("#description").value,  
-  };
-  // duomenys siunciami i serveri kaip naujas objektas
-    await fetchAPI(fetchUrl, "POST", newNote);
-    //isvalomi f. laukeliai
-    clearForm();
-    //f. gauna data is serverio ir atvaizduoja
+  };  
+    await fetchAPI(fetchUrl, "POST", newNote);    
+    clearForm();    
     getAndRenderNotes(); 
 });
-// f. kvieciama antra karta kad notes butu parodytus iskart, uzsikrovus puslapiui
+
 getAndRenderNotes();
